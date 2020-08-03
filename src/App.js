@@ -3,6 +3,8 @@ import moment from "moment";
 import Typography from "@material-ui/core/Typography";
 import "./styles.css";
 
+const FulfillmentTime = 0;
+
 const openingHours = [
   {
     locations: [
@@ -328,7 +330,7 @@ function getTimeDiff(startTime, endTime, day) {
 // Accept nWeeks param which is used to know which week in the future to use for calculating the date
 // For instance if we want to know the dates of the second week after the current, nWeek will be 2
 const getOneWeekAvailableDates = async (sourceArr, nWeeks) => {
-  const orderDay = moment(Date.now()).add(1, "h");
+  const orderDay = moment(Date.now()).add(FulfillmentTime, "h");
   const todayDay = orderDay.date(); // get current day integer value of the month from date
   /* currentDayOfWeek needed to prevent rendering an earlier dayoftheWeek.
   For example, without it if we are on Tuesday, the previous Sunday and Monday would be
@@ -378,23 +380,7 @@ const getOneWeekAvailableDates = async (sourceArr, nWeeks) => {
             } else {
               return getTimeDiff(tim.startTime, tim.endTime, day);
             }
-
-            // return getTimeDiff(tim.startTime, tim.endTime, day)
           })
-          // i === 0
-          //   ? getTimeDiff(
-          //       item.times[0].startTime,
-          //       // moment()
-          //       // .startOf('minute')
-          //       //   .add(60, "m")
-          //       //   .format("LT"),
-          //       item.times[0].endTime
-          //     )
-          //   : getTimeDiff(item.times[0].startTime, item.times[0].endTime)
-          // moment()
-          //   .add(30, "m")
-          //   .day(item)
-          //   .format("hh:mm A")
         };
       }
       return null;
