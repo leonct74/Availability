@@ -289,28 +289,13 @@ const deliveryHours = [
   }
 ];
 
-// Function to get date ranges. This would be the base for the calendar
-// function getDates(startDate, stopDate) {
-//   var dateArray = [];
-//   var currentDate = moment(startDate);
-//   var stopDate = moment(stopDate);
-//   while (currentDate <= stopDate) {
-//     dateArray.push(moment(currentDate).format("YYYY-MM-DD"));
-//     currentDate = moment(currentDate).add(1, "days");
-//   }
-//   return dateArray;
-// }
-
 // Gets an array of all active day od the week and filter those not active
-const getDeliveryActives = openingHours
-  .map((item, i) => (item.active ? i : null))
-  .filter(elem => elem !== null);
+// const getDeliveryActives = openingHours
+//   .map((item, i) => (item.active ? i : null))
+//   .filter(elem => elem !== null);
 
+// Creates an array of 1 hour timeslot from a time rage
 function getTimeDiff(startTime, endTime, day) {
-  console.log("START TIME IS: ", startTime);
-  console.log("DAY 2222 TIME IS: ", moment(day));
-  const today = moment(Date.now());
-
   const timeS = startTime; // "09:00"
   const timeE = endTime; // "18:00"
   const [hoursS, minutesS] = timeS.split(":");
@@ -319,7 +304,6 @@ function getTimeDiff(startTime, endTime, day) {
   const startT = moment(moment(day).set({ hours: hoursS, minutes: minutesS }));
   const endT = moment(moment(day).set({ hours: hoursE, minutes: minutesE }));
   console.log("startT and endT are: ", startT, endT);
-  console.log("DIFFERENCE: ", endT.diff(startT, "hours"));
 
   // Interval between the start and end time
   let duration = endT.diff(startT, "hours");
@@ -328,44 +312,28 @@ function getTimeDiff(startTime, endTime, day) {
   let timeSlots = [];
   for (let i = 0; i < duration; i++) {
     // Moment add function mutates startT and therefore I need to be careful
-    // timeSlots.push(
-    //   `${startT.format("LT")} - ${startT.add({ hours: 1 }).format("LT")}`
-    // );
-
-    // NEW
-    let todayDay = moment(today).date(); // get current day of the month from date
-    let dayDay = moment(day).date();
-    let isCurrentDay = todayDay - dayDay;
-    // console.log("isCurrentDay //// is: ", isCurrentDay);
-
     // Renders the slot adding the needed minute to start time to end the slot at 00 minutes of the next hours
     timeSlots.push(
       `${startT.format("LT")} - ${startT
         .add({ minutes: 60 - minutesS })
         .format("LT")}`
     );
-
-    // console.log("timeSlots is: ", timeSlots);
   }
 
   console.log("timeSlots is: ", timeSlots);
   return timeSlots;
 }
 
-// getTimeDiff();
-
-console.log("DatOfWeeks Active array is: ", getDeliveryActives);
-
-// Return an array of dates in the future corresponding to a specified array of days of the week
+// Return an array of dates ranges in the future corresponding to a specified array of days of the week
 // Accept nWeeks param which is used to know which week in the future to use for calculating the date
 // For instance if we want to know the dates of the second week after the current, nWeek will be 2
 const getOneWeekAvailableDates = async (sourceArr, nWeeks) => {
-  const orderDay = moment(Date.now());
+  const orderDay = moment(Date.now()).add(1, "h");
   const todayDay = orderDay.date(); // get current day integer value of the month from date
   /* currentDayOfWeek needed to prevent rendering an earlier dayoftheWeek.
   For example, without it if we are on Tuesday, the previous Sunday and Monday would be
   rendered */
-  const currentDayOfWeek = moment(Date.now()).isoWeekday();
+  const currentDayOfWeek = moment(orderDay).isoWeekday();
 
   return sourceArr
     .map((item, i) => {
@@ -378,7 +346,7 @@ const getOneWeekAvailableDates = async (sourceArr, nWeeks) => {
           month: "long",
           day: "2-digit"
         }).format(
-          moment(Date.now()).day(i + nWeeks * 7) // moment().day(24); // 3 Wednesdays from now (3 + 7 + 7 + 7)
+          moment(orderDay).day(i + nWeeks * 7) // moment().day(24); // 3 Wednesdays from now (3 + 7 + 7 + 7)
           // .format("dddd, MMMM Do YYYY LT")
         );
 
@@ -387,10 +355,10 @@ const getOneWeekAvailableDates = async (sourceArr, nWeeks) => {
           weekDays: day,
           // If is current day we need start time to account the Fulfillment time
           timeSlots: item.times.map((tim, t) => {
-            let dayDay = moment(day).date(); // day Integer value
+            let dayDay = orderDay.date(); // day Integer value
             let isCurrentDay = todayDay - dayDay;
-            const currentHours = moment(Date.now()).hours(); // HERE WE ADD FULFILLMENT TIME
-            const currentMinutes = moment(Date.now()).minutes();
+            const currentHours = moment(orderDay).hours(); // HERE WE ADD FULFILLMENT TIME
+            const currentMinutes = moment(orderDay).minutes();
             const [startTimeHours, minutesS] = tim.startTime.split(":");
 
             // IMPORTANT: Below condition is needed to start rendering only the current day of the week
