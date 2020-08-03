@@ -13,11 +13,10 @@ function getTimeDiff(startTime, endTime, day) {
   //const startTFirst = moment(today.set({ hours: hoursS, minutes: 0 }));
   const startT = moment(moment(day).set({ hours: hoursS, minutes: minutesS }));
   const endT = moment(moment(day).set({ hours: hoursE, minutes: minutesE }));
-  console.log("startT and endT are: ", startT, endT);
 
   // Interval between the start and end time
   let duration = endT.diff(startT, "hours");
-  console.log("duration is: ", duration);
+  // console.log("duration is: ", duration);
 
   let timeSlots = [];
   for (let i = 0; i < duration; i++) {
@@ -30,7 +29,7 @@ function getTimeDiff(startTime, endTime, day) {
     );
   }
 
-  console.log("timeSlots is: ", timeSlots);
+  // console.log("timeSlots is: ", timeSlots);
   return timeSlots;
 }
 
@@ -107,7 +106,7 @@ const getMultipleWeeksAvailability = async (
   let newArr = [];
   for (let i = 0; i <= nWeeks; i++) {
     newArr = await getOneWeekAvailableDates(sourceArr, i, fulfillmentTime);
-    console.log("NEWARR: ", newArr);
+    // console.log("NEWARR: ", newArr);
     arr = [...arr, ...newArr];
   }
   return await arr;

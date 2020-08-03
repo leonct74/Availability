@@ -302,7 +302,6 @@ export default function App() {
 
   useEffect(() => {
     async function fetchData() {
-      console.log("IVOKEDDDDDDDDDD");
       const result = await getMultipleWeeksAvailability(
         deliveryHours,
         nWeeks, // Int value rapresenting number of weeks in the future to be displayed
