@@ -113,4 +113,4 @@ const getMultipleWeeksAvailability = async (
   return await arr;
 };
 
-export default getMultipleWeeksAvailability;
+export { getMultipleWeeksAvailability, getOneWeekAvailableDates, getTimeDiff };
