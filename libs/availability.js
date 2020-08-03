@@ -36,8 +36,13 @@ function getTimeDiff(startTime, endTime, day) {
 // Return an array of dates ranges in the future corresponding to a specified array of days of the week
 // Accept nWeeks param which is used to know which week in the future to use for calculating the date
 // For instance if we want to know the dates of the second week after the current, nWeek will be 2
-const getOneWeekAvailableDates = async (sourceArr, nWeeks, fulfillmentTime) => {
-  const orderDay = moment(Date.now()).add(fulfillmentTime, "h");
+const getOneWeekAvailableDates = async (
+  sourceArr,
+  nWeeks,
+  fulfillmentTime,
+  unitOfTime
+) => {
+  const orderDay = moment(Date.now()).add(fulfillmentTime, unitOfTime);
   const todayDay = orderDay.date(); // get current day integer value of the month from date
   /* currentDayOfWeek needed to prevent rendering an earlier dayoftheWeek.
   For example, without it if we are on Tuesday, the previous Sunday and Monday would be
@@ -100,7 +105,8 @@ const getOneWeekAvailableDates = async (sourceArr, nWeeks, fulfillmentTime) => {
 const getMultipleWeeksAvailability = async (
   sourceArr,
   nWeeks,
-  fulfillmentTime
+  fulfillmentTime,
+  unitOfTime
 ) => {
   let arr = [];
   let newArr = [];
