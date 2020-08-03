@@ -314,7 +314,15 @@ export default function App() {
   }, []);
 
   return (
-    <div className="App">
+    <div
+      className="App"
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center"
+      }}
+    >
       {/* <h1>UTC: {today}</h1> */}
       <h3>AVAILABILITY</h3>
       <div>
@@ -331,6 +339,8 @@ export default function App() {
                 <div
                   key={`s-${s}`}
                   style={{
+                    paddingLeft: 10,
+                    paddingRight: 10,
                     borderStyle: "solid",
                     borderWidth: 0.5,
                     maxWidth: 250,
