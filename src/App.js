@@ -189,7 +189,7 @@ const deliveryHours = [
       }
     ],
     weekDays: "Tuesday",
-    active: false,
+    active: true,
     times: [
       {
         endTime: "12:00",

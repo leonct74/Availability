@@ -111,7 +111,12 @@ const getMultipleWeeksAvailability = async (
   let arr = [];
   let newArr = [];
   for (let i = 0; i <= nWeeks; i++) {
-    newArr = await getOneWeekAvailableDates(sourceArr, i, fulfillmentTime);
+    newArr = await getOneWeekAvailableDates(
+      sourceArr,
+      i,
+      fulfillmentTime,
+      unitOfTime
+    );
     // console.log("NEWARR: ", newArr);
     arr = [...arr, ...newArr];
   }
