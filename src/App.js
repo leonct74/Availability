@@ -336,26 +336,14 @@ function getTimeDiff(startTime, endTime, day) {
     let todayDay = moment(today).date(); // get current day of the month from date
     let dayDay = moment(day).date();
     let isCurrentDay = todayDay - dayDay;
-    console.log("isCurrentDay //// is: ", isCurrentDay);
-    if (isCurrentDay === 0 && i === 0) {
-      const currentHours = moment(Date.now()).hours();
-      const currentMinutes = moment(Date.now()).minutes();
-      const currentTime = moment(
-        moment(day).set({ hours: currentHours, minutes: currentMinutes })
-      );
-      console.log("currentHours //// is: ", currentHours);
-      console.log("currentMinutes //// is: ", currentMinutes);
+    // console.log("isCurrentDay //// is: ", isCurrentDay);
 
-      timeSlots.push(
-        `${startT.format("LT")} - ${startT
-          .add({ minutes: 60 - currentMinutes })
-          .format("LT")}`
-      );
-    } else {
-      timeSlots.push(
-        `${startT.format("LT")} - ${startT.add({ hours: 1 }).format("LT")}`
-      );
-    }
+    // Renders the slot adding the needed minute to start time to end the slot at 00 minutes of the next hours
+    timeSlots.push(
+      `${startT.format("LT")} - ${startT
+        .add({ minutes: 60 - minutesS })
+        .format("LT")}`
+    );
 
     // console.log("timeSlots is: ", timeSlots);
   }
@@ -372,7 +360,8 @@ console.log("DatOfWeeks Active array is: ", getDeliveryActives);
 // Accept nWeeks param which is used to know which week in the future to use for calculating the date
 // For instance if we want to know the dates of the second week after the current, nWeek will be 2
 const getOneWeekAvailableDates = async (sourceArr, nWeeks) => {
-  const todayDay = moment(Date.now()).date(); // get current day integer value of the month from date
+  const orderDay = moment(Date.now());
+  const todayDay = orderDay.date(); // get current day integer value of the month from date
   /* currentDayOfWeek needed to prevent rendering an earlier dayoftheWeek.
   For example, without it if we are on Tuesday, the previous Sunday and Monday would be
   rendered */
@@ -400,7 +389,7 @@ const getOneWeekAvailableDates = async (sourceArr, nWeeks) => {
           timeSlots: item.times.map((tim, t) => {
             let dayDay = moment(day).date(); // day Integer value
             let isCurrentDay = todayDay - dayDay;
-            const currentHours = moment(Date.now()).add(60, "m").hours(); // HERE WE ADD FULFILLMENT TIME
+            const currentHours = moment(Date.now()).hours(); // HERE WE ADD FULFILLMENT TIME
             const currentMinutes = moment(Date.now()).minutes();
             const [startTimeHours, minutesS] = tim.startTime.split(":");
 
