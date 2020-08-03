@@ -143,11 +143,15 @@ const deliveryHours = [
       }
     ],
     weekDays: "Sunday",
-    active: false,
+    active: true,
     times: [
       {
-        endTime: "23:00",
-        startTime: "18:00"
+        endTime: "12:00",
+        startTime: "08:00"
+      },
+      {
+        endTime: "24:00",
+        startTime: "16:00"
       }
     ]
   },
@@ -161,11 +165,15 @@ const deliveryHours = [
       }
     ],
     weekDays: "Monday",
-    active: false,
+    active: true,
     times: [
       {
-        endTime: "23:00",
-        startTime: "18:00"
+        endTime: "14:00",
+        startTime: "08:00"
+      },
+      {
+        endTime: "24:00",
+        startTime: "16:00"
       }
     ]
   },
@@ -182,8 +190,12 @@ const deliveryHours = [
     active: false,
     times: [
       {
-        endTime: "23:00",
-        startTime: "18:00"
+        endTime: "12:00",
+        startTime: "08:00"
+      },
+      {
+        endTime: "24:00",
+        startTime: "16:00"
       }
     ]
   },
@@ -200,8 +212,12 @@ const deliveryHours = [
     active: false,
     times: [
       {
-        endTime: "23:00",
-        startTime: "18:00"
+        endTime: "12:00",
+        startTime: "08:00"
+      },
+      {
+        endTime: "24:00",
+        startTime: "16:00"
       }
     ]
   },
@@ -218,8 +234,12 @@ const deliveryHours = [
     active: true,
     times: [
       {
-        endTime: "23:00",
-        startTime: "18:00"
+        endTime: "12:00",
+        startTime: "08:00"
+      },
+      {
+        endTime: "24:00",
+        startTime: "16:00"
       }
     ]
   },
@@ -236,8 +256,12 @@ const deliveryHours = [
     active: true,
     times: [
       {
-        endTime: "23:00",
-        startTime: "18:00"
+        endTime: "12:00",
+        startTime: "08:00"
+      },
+      {
+        endTime: "24:00",
+        startTime: "16:00"
       }
     ]
   },
@@ -254,8 +278,12 @@ const deliveryHours = [
     active: true,
     times: [
       {
-        endTime: "23:00",
-        startTime: "18:00"
+        endTime: "12:00",
+        startTime: "08:00"
+      },
+      {
+        endTime: "24:00",
+        startTime: "16:00"
       }
     ]
   }
@@ -278,28 +306,57 @@ const getDeliveryActives = openingHours
   .map((item, i) => (item.active ? i : null))
   .filter(elem => elem !== null);
 
-function getTimeDiff(startTime, endTime) {
+function getTimeDiff(startTime, endTime, day) {
   console.log("START TIME IS: ", startTime);
+  console.log("DAY 2222 TIME IS: ", moment(day));
   const today = moment(Date.now());
+
   const timeS = startTime; // "09:00"
   const timeE = endTime; // "18:00"
   const [hoursS, minutesS] = timeS.split(":");
   const [hoursE, minutesE] = timeE.split(":");
-  const startT = moment(today.set({ hours: hoursS, minutes: minutesS }));
-  const endT = moment(today.set({ hours: hoursE, minutes: minutesE }));
+  //const startTFirst = moment(today.set({ hours: hoursS, minutes: 0 }));
+  const startT = moment(moment(day).set({ hours: hoursS, minutes: minutesS }));
+  const endT = moment(moment(day).set({ hours: hoursE, minutes: minutesE }));
   console.log("startT and endT are: ", startT, endT);
   console.log("DIFFERENCE: ", endT.diff(startT, "hours"));
 
   // Interval between the start and end time
-  var duration = endT.diff(startT, "hours");
+  let duration = endT.diff(startT, "hours");
   console.log("duration is: ", duration);
 
   let timeSlots = [];
   for (let i = 0; i < duration; i++) {
     // Moment add function mutates startT and therefore I need to be careful
-    timeSlots.push(
-      `${startT.format("LT")} - ${startT.add({ hours: 1 }).format("LT")}`
-    );
+    // timeSlots.push(
+    //   `${startT.format("LT")} - ${startT.add({ hours: 1 }).format("LT")}`
+    // );
+
+    // NEW
+    let todayDay = moment(today).date(); // get current day of the month from date
+    let dayDay = moment(day).date();
+    let isCurrentDay = todayDay - dayDay;
+    console.log("isCurrentDay //// is: ", isCurrentDay);
+    if (isCurrentDay === 0 && i === 0) {
+      const currentHours = moment(Date.now()).hours();
+      const currentMinutes = moment(Date.now()).minutes();
+      const currentTime = moment(
+        moment(day).set({ hours: currentHours, minutes: currentMinutes })
+      );
+      console.log("currentHours //// is: ", currentHours);
+      console.log("currentMinutes //// is: ", currentMinutes);
+
+      timeSlots.push(
+        `${startT.format("LT")} - ${startT
+          .add({ minutes: 60 - currentMinutes })
+          .format("LT")}`
+      );
+    } else {
+      timeSlots.push(
+        `${startT.format("LT")} - ${startT.add({ hours: 1 }).format("LT")}`
+      );
+    }
+
     // console.log("timeSlots is: ", timeSlots);
   }
 
@@ -315,25 +372,68 @@ console.log("DatOfWeeks Active array is: ", getDeliveryActives);
 // Accept nWeeks param which is used to know which week in the future to use for calculating the date
 // For instance if we want to know the dates of the second week after the current, nWeek will be 2
 const getOneWeekAvailableDates = async (sourceArr, nWeeks) => {
+  const todayDay = moment(Date.now()).date(); // get current day integer value of the month from date
+  /* currentDayOfWeek needed to prevent rendering an earlier dayoftheWeek.
+  For example, without it if we are on Tuesday, the previous Sunday and Monday would be
+  rendered */
+  const currentDayOfWeek = moment(Date.now()).isoWeekday();
+
   return sourceArr
     .map((item, i) => {
       // Use js Intl.DateTimeFormat to get the right date format
       // and moment to get UTC date in millisecons
-      if (item.active) {
+      if (item.active && i >= currentDayOfWeek) {
+        const day = new Intl.DateTimeFormat("en-US", {
+          weekday: "long",
+          // year: "numeric",
+          month: "long",
+          day: "2-digit"
+        }).format(
+          moment(Date.now()).day(i + nWeeks * 7) // moment().day(24); // 3 Wednesdays from now (3 + 7 + 7 + 7)
+          // .format("dddd, MMMM Do YYYY LT")
+        );
+
         return {
           locations: item.locations,
-          weekDays: new Intl.DateTimeFormat("en-US", {
-            weekday: "long",
-            // year: "numeric",
-            month: "long",
-            day: "2-digit"
-          }).format(
-            moment()
-              .add(30, "m")
-              .day(i + nWeeks * 7) // moment().day(24); // 3 Wednesdays from now (3 + 7 + 7 + 7)
-            // .format("dddd, MMMM Do YYYY LT")
-          ),
-          timeSlots: getTimeDiff(item.times[0].startTime, item.times[0].endTime)
+          weekDays: day,
+          // If is current day we need start time to account the Fulfillment time
+          timeSlots: item.times.map((tim, t) => {
+            let dayDay = moment(day).date(); // day Integer value
+            let isCurrentDay = todayDay - dayDay;
+            const currentHours = moment(Date.now()).add(60, "m").hours(); // HERE WE ADD FULFILLMENT TIME
+            const currentMinutes = moment(Date.now()).minutes();
+            const [startTimeHours, minutesS] = tim.startTime.split(":");
+
+            // IMPORTANT: Below condition is needed to start rendering only the current day of the week
+            // from the current hour. The condition "currentHours > startTimeHours" instead, is needed to prevent
+            // the first time slot to be rendered twice when times array contains more than one timeslot/obj.
+            // Infact this iteation is called for each timeslot/obj in times array.
+            if (
+              isCurrentDay === 0 &&
+              i === currentDayOfWeek &&
+              currentHours > startTimeHours
+            ) {
+              return getTimeDiff(
+                `${currentHours}:${currentMinutes}`,
+                tim.endTime,
+                day
+              );
+            } else {
+              return getTimeDiff(tim.startTime, tim.endTime, day);
+            }
+
+            // return getTimeDiff(tim.startTime, tim.endTime, day)
+          })
+          // i === 0
+          //   ? getTimeDiff(
+          //       item.times[0].startTime,
+          //       // moment()
+          //       // .startOf('minute')
+          //       //   .add(60, "m")
+          //       //   .format("LT"),
+          //       item.times[0].endTime
+          //     )
+          //   : getTimeDiff(item.times[0].startTime, item.times[0].endTime)
           // moment()
           //   .add(30, "m")
           //   .day(item)
@@ -410,22 +510,24 @@ export default function App() {
             {item.locations.map((loc, x) => (
               <Typography key={`x-${x}`}>{loc.location}</Typography>
             ))}
-            {/* </div>
 
-            <div key={`i-2${i}` style={{ padding: 5 }}> */}
-            {item.timeSlots.map((slot, s) => (
-              <div
-                key={`s-${s}`}
-                style={{
-                  borderStyle: "solid",
-                  borderWidth: 0.5,
-                  maxWidth: 250,
-                  margin: 5
-                }}
-              >
-                <Typography variant="body2">{slot}</Typography>
-              </div>
-            ))}
+            {// This is a map of a map because timeSlots is an array of array
+            item.timeSlots.map(elem =>
+              elem.map((slot, s) => (
+                <div
+                  key={`s-${s}`}
+                  style={{
+                    borderStyle: "solid",
+                    borderWidth: 0.5,
+                    maxWidth: 250,
+                    margin: 5
+                  }}
+                >
+                  <Typography variant="body2">{slot}</Typography>
+                </div>
+              ))
+            )}
+            {}
           </div>
         ))}
       </div>
