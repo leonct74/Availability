@@ -22,11 +22,17 @@ function getTimeDiff(startTime, endTime, day) {
   for (let i = 0; i < duration; i++) {
     // Moment add function mutates startT and therefore I need to be careful
     // Renders the slot adding the needed minute to start time to end the slot at 00 minutes of the next hours
-    timeSlots.push(
-      `${startT.format("LT")} - ${startT
-        .add({ minutes: 60 - minutesS })
-        .format("LT")}`
-    );
+    if (i === 0) {
+      timeSlots.push(
+        `${startT.format("LT")} - ${startT
+          .add({ minutes: 60 - minutesS })
+          .format("LT")}`
+      );
+    } else {
+      timeSlots.push(
+        `${startT.format("LT")} - ${startT.add({ minutes: 60 }).format("LT")}`
+      );
+    }
   }
 
   // console.log("timeSlots is: ", timeSlots);

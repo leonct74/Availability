@@ -211,14 +211,14 @@ const deliveryHours = [
       }
     ],
     weekDays: "Wednesday",
-    active: false,
+    active: true,
     times: [
       {
         endTime: "12:00",
         startTime: "08:00"
       },
       {
-        endTime: "24:00",
+        endTime: "23:00",
         startTime: "16:00"
       }
     ]
@@ -240,7 +240,7 @@ const deliveryHours = [
         startTime: "08:00"
       },
       {
-        endTime: "24:00",
+        endTime: "23 :00",
         startTime: "16:00"
       }
     ]
@@ -297,7 +297,7 @@ export default function App() {
   const [time, setTime] = useState([]);
 
   // VARIABLES
-  const fulfillmentTime = 0;
+  const fulfillmentTime = 1;
   const unitOfTime = "h";
   const nWeeks = 2;
 
