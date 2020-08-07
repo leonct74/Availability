@@ -321,12 +321,13 @@ export default function App() {
       {/* <h1>UTC: {today}</h1> */}
       <h3>AVAILABILITY</h3>
       <div
-        style={{
-          display: "flex",
-          flexDirection: "row",
-          justifyContent: "flex-start",
-          alignItems: "flex-start"
-        }}
+      // TO DISPLAY IN A ROW UN-COMMENT THIS STYLE
+      // style={{
+      //   display: "flex",
+      //   flexDirection: "row",
+      //   justifyContent: "flex-start",
+      //   alignItems: "flex-start"
+      // }}
       >
         {time.map((item, i) =>
           // The below condition, is to ensure to rendered the dayOfWeek that have available timeslot at current time
@@ -342,11 +343,24 @@ export default function App() {
                 alignItems: "center"
               }}
             >
-              <Typography variant="subtitle1">{item.weekDays}</Typography>
-              {item.locations.map((loc, x) => (
-                <Typography key={`x-${x}`}>{loc.location}</Typography>
-              ))}
-
+              <div
+                key={`i-2${i}`}
+                style={{
+                  width: 150,
+                  paddingLeft: 10,
+                  paddingRight: 10,
+                  borderRadius: 5,
+                  borderStyle: "solid",
+                  borderWidth: 0.5,
+                  maxWidth: 250,
+                  margin: 5
+                }}
+              >
+                <Typography variant="subtitle1">{item.weekDays}</Typography>
+                {item.locations.map((loc, x) => (
+                  <Typography key={`x-${x}`}>{loc.location}</Typography>
+                ))}
+              </div>
               {// This is a map of a map because timeSlots is an array of array
               item.timeSlots.map(elem =>
                 elem.map((slot, s) => (
