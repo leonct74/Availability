@@ -320,7 +320,14 @@ export default function App() {
     <div className="App">
       {/* <h1>UTC: {today}</h1> */}
       <h3>AVAILABILITY</h3>
-      <div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "flex-start",
+          alignItems: "flex-start"
+        }}
+      >
         {time.map((item, i) =>
           // The below condition, is to ensure to rendered the dayOfWeek that have available timeslot at current time
           // Without this condition if last timeslot is at 16:00 and we are checking the order at 16:00,
